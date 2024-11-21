@@ -1,5 +1,5 @@
 // Game Settings
-const maxQuestions = 15;
+const maxQuestions = 10; // Number of questions
 let timer;
 let timeLeft = 60; // 1-minute timer
 let currentQuestion = 0;
@@ -13,6 +13,7 @@ const questionDiv = document.querySelector('.question');
 const choicesDiv = document.querySelector('.choices');
 const timerSpan = document.getElementById('time');
 const gameOverDiv = document.getElementById('game-over');
+const gameWinDiv = document.getElementById('game-win');
 const homeButton = document.getElementById('home-button');
 
 // Start Game
@@ -87,7 +88,7 @@ function checkAnswer(selected, correct) {
         resetTimer();
         generateQuestion();
     } else {
-        endGame();
+        endGame(false);  // End the game if the answer is wrong
     }
 }
 
@@ -98,7 +99,7 @@ function startTimer() {
         timeLeft--;
         timerSpan.textContent = timeLeft;
         if (timeLeft <= 0) {
-            endGame();
+            endGame(false);  // End the game if the time runs out
         }
     }, 1000);
 }
@@ -109,11 +110,28 @@ function resetTimer() {
 }
 
 // End the Game
-function endGame() {
+function endGame(isWin = true) {
     clearInterval(timer);
     questionDiv.textContent = '';
     choicesDiv.innerHTML = '';
-    gameOverDiv.textContent = `انتهت اللعبة! لقد أجبتم على ${score} من أصل ${maxQuestions} أسئلة.`;
+    
+    // Display appropriate message based on win/lose
+    if (isWin) {
+        gameWinDiv.textContent = `مبروك! لقد أجبتم على ${score} من أصل ${maxQuestions} أسئلة بشكل صحيح!`;
+        gameWinDiv.style.display = 'block';
+        gameOverDiv.style.display = 'none';
+        
+        // Insert the winning image
+        gameWinDiv.innerHTML += `<img src="winning.jpg" alt="مبروك" style="width: 100px; height: auto;">`;
+    } else {
+        gameOverDiv.textContent = `للأسف! انتهت اللعبة. لقد أجبتم على ${score} من أصل ${maxQuestions} أسئلة.`;
+        gameOverDiv.style.display = 'block';
+        gameWinDiv.style.display = 'none';
+        
+        // Insert the losing image
+        gameOverDiv.innerHTML += `<img src="losing.jpg" alt="خسارة" style="width: 100px; height: auto;">`;
+    }
+    
     homeButton.style.display = 'block';
 }
 
@@ -123,6 +141,9 @@ homeButton.onclick = () => {
     score = 0;
     selectedOperation = null;
     gameOverDiv.textContent = '';
+    gameWinDiv.textContent = '';
+    gameOverDiv.style.display = 'none';
+    gameWinDiv.style.display = 'none';
     homeButton.style.display = 'none';
     gameContainer.style.display = 'none';
     mainMenu.style.display = 'block';
